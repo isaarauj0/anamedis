@@ -1,7 +1,16 @@
-modules = ["web"]
+run = "python3 -m http.server 8080"
+modules = ["web", "python-base-3.13"]
 
 [nix]
 channel = "stable-25_05"
 
 [agent]
 expertMode = true
+
+[deployment]
+deploymentTarget = "static"
+publicDir = "."
+
+[[ports]]
+localPort = 8080
+externalPort = 80
