@@ -3,529 +3,915 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AnaMedis â HistÃ³rico ClÃ­nico Digital</title>
+<title>AnaMedis — Seu histórico de saúde em um só lugar</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
-  :root {
-    --teal-primary: #0097B2;
-    --teal-dark: #006E82;
-    --teal-light: #E0F7FB;
-    --teal-mid: #00B4D8;
-  }
   * { box-sizing: border-box; }
-  body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
-  .gradient-bg { background: linear-gradient(135deg, #006E82 0%, #00B4D8 100%); }
-  .card-hover { transition: all 0.2s ease; }
-  .card-hover:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,151,178,0.2); }
-  .fade-in { animation: fadeIn 0.3s ease; }
-  @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
-  .pulse-dot { animation: pulse 2s infinite; }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-  .progress-bar { transition: width 0.5s ease; }
-  .chip { display:inline-flex; align-items:center; gap:4px; padding:3px 10px; border-radius:20px; font-size:12px; font-weight:600; }
-  .doc-card { transition: all 0.2s; cursor:pointer; }
-  .doc-card:hover { background:#f0fbfc; border-color:#00B4D8; }
-  ::-webkit-scrollbar { width: 6px; }
-  ::-webkit-scrollbar-track { background: #f1f1f1; }
-  ::-webkit-scrollbar-thumb { background: #00B4D8; border-radius:3px; }
+  body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; margin: 0; }
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-thumb { background: #0d9488; border-radius: 2px; }
+  .fade { animation: fadeIn 0.2s ease; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+  .nav-active { background: #134e4a !important; color: white !important; }
+  .nav-item { transition: background 0.12s, color 0.12s; }
+  .spin { animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .doc-row:hover { background: #f0fdfa; border-color: #5eead4; }
 </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
+<body class="bg-slate-50 overflow-hidden h-screen">
 
-<!-- APP CONTAINER -->
-<div id="app">
+<div id="app" class="flex h-screen overflow-hidden">
 
-<!-- =================== TELA 0: HOME =================== -->
-<div id="screen-home" class="min-h-screen gradient-bg flex flex-col items-center justify-center px-6 py-10">
-  <div class="text-center mb-10 fade-in">
-    <div class="flex items-center justify-center gap-3 mb-4">
-      <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-lg">
-        <svg class="w-9 h-9" viewBox="0 0 36 36" fill="none">
-          <circle cx="18" cy="18" r="18" fill="#0097B2"/>
-          <path d="M22 10h-8a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V12a2 2 0 00-2-2z" fill="white" opacity="0.3"/>
-          <path d="M18 14v8M14 18h8" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- ===================== SIDEBAR ===================== -->
+  <aside class="w-56 flex-shrink-0 flex flex-col overflow-y-auto" style="background:#111827">
+
+    <!-- Logo -->
+    <div class="px-4 pt-5 pb-2 flex items-center gap-2.5">
+      <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#0d9488">
+        <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
         </svg>
       </div>
-      <div>
-        <h1 class="text-4xl font-black text-white tracking-tight">anamedis</h1>
-        <p class="text-teal-100 text-sm font-medium mt-0.5" style="color:#b2ebf2">Uma histÃ³ria que comeÃ§a antes do aplicativo</p>
+      <span class="text-white font-bold text-lg tracking-tight">anamedis</span>
+    </div>
+
+    <!-- User chip -->
+    <div class="px-3 pb-3 pt-1">
+      <div class="rounded-lg px-3 py-2 flex items-center gap-2" style="background:#1f2937">
+        <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0" style="background:#0d9488">MA</div>
+        <div class="min-w-0">
+          <div class="text-white text-xs font-semibold truncate">Maria Aparecida</div>
+          <div class="text-xs" style="color:#6ee7b7">(você)</div>
+        </div>
       </div>
     </div>
-    <p class="text-white text-lg opacity-90 max-w-sm mx-auto leading-relaxed">O histÃ³rico clÃ­nico do paciente <strong>organizado, confiÃ¡vel e disponÃ­vel</strong> na tela do mÃ©dico.</p>
-  </div>
 
-  <div class="w-full max-w-sm space-y-4 fade-in">
-    <button onclick="goTo('screen-patient')" class="w-full bg-white text-gray-800 rounded-2xl p-5 flex items-center gap-4 shadow-lg card-hover">
-      <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background:#E0F7FB">
-        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="#0097B2" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0112 0v2"/></svg>
-      </div>
-      <div class="text-left">
-        <div class="font-bold text-gray-800">Sou Paciente</div>
-        <div class="text-sm text-gray-500">Ver e compartilhar meu histÃ³rico</div>
-      </div>
-      <svg class="w-5 h-5 text-gray-400 ml-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-    </button>
-
-    <button onclick="goTo('screen-doctor-entry')" class="w-full bg-white text-gray-800 rounded-2xl p-5 flex items-center gap-4 shadow-lg card-hover">
-      <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background:#E0F7FB">
-        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="#0097B2" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h4"/></svg>
-      </div>
-      <div class="text-left">
-        <div class="font-bold text-gray-800">Sou MÃ©dico</div>
-        <div class="text-sm text-gray-500">Acessar histÃ³rico com cÃ³digo do paciente</div>
-      </div>
-      <svg class="w-5 h-5 text-gray-400 ml-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-    </button>
-  </div>
-
-  <div class="mt-10 flex gap-6 text-white opacity-70 text-sm fade-in">
-    <div class="flex items-center gap-1.5"><div class="w-2 h-2 bg-green-300 rounded-full pulse-dot"></div>127 pacientes ativos</div>
-    <div class="flex items-center gap-1.5">
-      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-      LGPD compliant
-    </div>
-  </div>
-</div>
-
-<!-- =================== TELA 1: PACIENTE DASHBOARD =================== -->
-<div id="screen-patient" class="hidden min-h-screen bg-gray-50">
-  <!-- Header -->
-  <div class="gradient-bg px-5 pt-10 pb-20">
-    <div class="flex items-center justify-between mb-5">
-      <button onclick="goTo('screen-home')" class="text-white opacity-70 hover:opacity-100">
-        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    <!-- Nav -->
+    <nav class="px-3 flex-1 space-y-0.5">
+      <button onclick="nav('inicio')" id="nav-inicio" class="nav-item w-full text-left flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium" style="color:#9ca3af">
+        <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        Início
       </button>
-      <div class="flex items-center gap-2">
-        <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-          <span class="text-sm font-bold" style="color:#0097B2">MA</span>
-        </div>
-        <div class="text-white font-medium text-sm">Maria Aparecida</div>
-      </div>
+      <button onclick="nav('documentos')" id="nav-documentos" class="nav-item w-full text-left flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium" style="color:#9ca3af">
+        <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        Documentos
+      </button>
+      <button onclick="nav('consultas')" id="nav-consultas" class="nav-item w-full text-left flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium" style="color:#9ca3af">
+        <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Consultas
+      </button>
+      <button onclick="nav('compartilhar')" id="nav-compartilhar" class="nav-item w-full text-left flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium" style="color:#9ca3af">
+        <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+        Compartilhar
+      </button>
+      <button onclick="nav('saude')" id="nav-saude" class="nav-item w-full text-left flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium" style="color:#9ca3af">
+        <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+        Minha Saúde
+      </button>
+      <button onclick="nav('perfil')" id="nav-perfil" class="nav-item w-full text-left flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium" style="color:#9ca3af">
+        <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+        Perfil
+      </button>
+
+      <div class="my-2 border-t" style="border-color:#1f2937"></div>
+
+      <button onclick="nav('dispositivos')" id="nav-dispositivos" class="nav-item w-full text-left flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium" style="color:#9ca3af">
+        <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+        Dispositivos
+      </button>
+      <button onclick="nav('acessos')" id="nav-acessos" class="nav-item w-full text-left flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium" style="color:#9ca3af">
+        <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+        Acessos
+      </button>
+      <button onclick="nav('conta')" id="nav-conta" class="nav-item w-full text-left flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium" style="color:#9ca3af">
+        <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+        Conta e privacidade
+      </button>
+      <button onclick="nav('assinatura')" id="nav-assinatura" class="nav-item w-full text-left flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium" style="color:#9ca3af">
+        <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+        Assinatura e pagamento
+      </button>
+    </nav>
+
+    <!-- Bottom -->
+    <div class="p-3 space-y-1.5">
+      <button onclick="openDoctorModal()" class="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs nav-item" style="color:#6b7280">
+        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+        Sou médico
+      </button>
+      <button onclick="nav('documentos')" class="w-full text-white rounded-lg px-4 py-2.5 flex items-center justify-center gap-2 text-sm font-semibold" style="background:#0d9488">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+        Adicionar arquivo
+      </button>
     </div>
-    <h2 class="text-white text-2xl font-bold">OlÃ¡, Maria!</h2>
-    <p class="text-white opacity-70 text-sm mt-1">Sua carteira digital de saÃºde</p>
+  </aside>
+
+  <!-- ===================== MAIN ===================== -->
+  <div class="flex-1 flex flex-col overflow-hidden">
+    <!-- Top banner -->
+    <div class="bg-white border-b flex-shrink-0 px-6 py-2" style="border-color:#f1f5f9">
+      <p class="text-xs text-center" style="color:#94a3b8">Seu histórico de saúde em um só lugar</p>
+    </div>
+    <!-- Page content -->
+    <main id="main" class="flex-1 overflow-y-auto" style="background:#f8fafc"></main>
   </div>
 
-  <!-- Stats Cards -->
-  <div class="px-5 -mt-12 grid grid-cols-3 gap-3 mb-5">
-    <div class="bg-white rounded-2xl p-4 shadow-md text-center">
-      <div class="text-2xl font-black" style="color:#0097B2">12</div>
-      <div class="text-xs text-gray-500 mt-0.5">Documentos</div>
-    </div>
-    <div class="bg-white rounded-2xl p-4 shadow-md text-center">
-      <div class="text-2xl font-black text-green-500">3</div>
-      <div class="text-xs text-gray-500 mt-0.5">Consultas</div>
-    </div>
-    <div class="bg-white rounded-2xl p-4 shadow-md text-center">
-      <div class="text-2xl font-black text-orange-500">1</div>
-      <div class="text-xs text-gray-500 mt-0.5">Pendente</div>
-    </div>
-  </div>
-
-  <!-- Action Buttons -->
-  <div class="px-5 flex gap-3 mb-6">
-    <button onclick="goTo('screen-upload')" class="flex-1 py-3.5 rounded-xl font-semibold text-white text-sm flex items-center justify-center gap-2 shadow-md" style="background:#0097B2">
-      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7-7 7 7"/></svg>
-      Adicionar Exame
-    </button>
-    <button onclick="goTo('screen-share')" class="flex-1 py-3.5 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 shadow-md border-2" style="border-color:#0097B2; color:#0097B2; background:white">
-      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98"/></svg>
-      Compartilhar
-    </button>
-  </div>
-
-  <!-- Documents -->
-  <div class="px-5">
-    <h3 class="font-bold text-gray-800 mb-3">HistÃ³rico ClÃ­nico</h3>
-    <div class="space-y-2.5" id="doc-list">
-      <!-- Documents injected by JS -->
-    </div>
-  </div>
-
-  <div class="h-8"></div>
 </div>
 
-<!-- =================== TELA 2: UPLOAD / IA =================== -->
-<div id="screen-upload" class="hidden min-h-screen bg-gray-50">
-  <div class="gradient-bg px-5 pt-10 pb-6">
-    <button onclick="goTo('screen-patient')" class="text-white opacity-70 hover:opacity-100 mb-4 block">
-      <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-    </button>
-    <h2 class="text-white text-2xl font-bold">Adicionar Exame</h2>
-    <p class="text-white opacity-70 text-sm mt-1">A IA identifica o tipo, data e valores automaticamente</p>
-  </div>
-
-  <div class="px-5 py-6" id="upload-step-1">
-    <div id="upload-area" onclick="startAI()" class="border-2 border-dashed rounded-2xl p-10 text-center cursor-pointer transition-all hover:border-teal-400" style="border-color:#0097B2; background:#f0fbfc">
-      <div class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4" style="background:#E0F7FB">
-        <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="#0097B2" stroke-width="1.5"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-      </div>
-      <p class="font-bold text-gray-700 mb-1">Fotografe ou envie o documento</p>
-      <p class="text-sm text-gray-500">Exame, laudo, receita, boletim</p>
-      <div class="mt-4 inline-block px-6 py-2.5 rounded-full text-white text-sm font-semibold" style="background:#0097B2">Selecionar arquivo</div>
-    </div>
-  </div>
-
-  <!-- AI Processing -->
-  <div id="ai-processing" class="hidden px-5 py-6 fade-in">
-    <div class="bg-white rounded-2xl p-6 shadow-md">
-      <div class="flex items-center gap-3 mb-5">
-        <div class="w-10 h-10 rounded-full flex items-center justify-center" style="background:#E0F7FB">
-          <svg class="w-5 h-5 pulse-dot" fill="#0097B2" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
-        </div>
-        <div>
-          <div class="font-bold text-gray-800">IA processando documento...</div>
-          <div class="text-sm text-gray-500" id="ai-status">Identificando tipo de exame</div>
-        </div>
-      </div>
-      <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
-        <div class="h-full rounded-full progress-bar" style="background:#0097B2; width:0%" id="ai-progress"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- AI Result -->
-  <div id="ai-result" class="hidden px-5 py-6 fade-in">
-    <div class="bg-white rounded-2xl p-5 shadow-md mb-4">
-      <div class="flex items-center gap-2 mb-4">
-        <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-          <svg class="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>
-        </div>
-        <span class="font-bold text-gray-800">IA identificou o documento</span>
-      </div>
-      <div class="space-y-2.5">
-        <div class="flex justify-between py-2 border-b border-gray-100">
-          <span class="text-sm text-gray-500">Tipo</span>
-          <span class="text-sm font-semibold text-gray-800">Hemograma Completo</span>
-        </div>
-        <div class="flex justify-between py-2 border-b border-gray-100">
-          <span class="text-sm text-gray-500">LaboratÃ³rio</span>
-          <span class="text-sm font-semibold text-gray-800">Fleury</span>
-        </div>
-        <div class="flex justify-between py-2 border-b border-gray-100">
-          <span class="text-sm text-gray-500">Data do exame</span>
-          <span class="text-sm font-semibold text-gray-800">14/11/2026</span>
-        </div>
-        <div class="flex justify-between py-2 border-b border-gray-100">
-          <span class="text-sm text-gray-500">Hemoglobina</span>
-          <span class="text-sm font-semibold text-orange-500">11.2 g/dL â </span>
-        </div>
-        <div class="flex justify-between py-2">
-          <span class="text-sm text-gray-500">Plaquetas</span>
-          <span class="text-sm font-semibold text-green-600">245.000 â</span>
-        </div>
-      </div>
-      <div class="mt-3 p-3 rounded-xl text-xs" style="background:#E0F7FB; color:#006E82">
-        â¡ Hemoglobina levemente abaixo do valor de referÃªncia. Documento original preservado.
-      </div>
-    </div>
-    <div class="flex gap-3">
-      <button onclick="goTo('screen-patient')" class="flex-1 py-3 rounded-xl border-2 font-semibold text-sm" style="border-color:#0097B2; color:#0097B2">Corrigir</button>
-      <button onclick="confirmDoc()" class="flex-1 py-3 rounded-xl text-white font-semibold text-sm" style="background:#0097B2">Confirmar e Salvar</button>
-    </div>
-  </div>
-</div>
-
-<!-- =================== TELA 3: COMPARTILHAR =================== -->
-<div id="screen-share" class="hidden min-h-screen bg-gray-50">
-  <div class="gradient-bg px-5 pt-10 pb-6">
-    <button onclick="goTo('screen-patient')" class="text-white opacity-70 hover:opacity-100 mb-4 block">
-      <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-    </button>
-    <h2 class="text-white text-2xl font-bold">Compartilhar com MÃ©dico</h2>
-    <p class="text-white opacity-70 text-sm mt-1">Acesso controlado. VocÃª decide o que ele vÃª.</p>
-  </div>
-
-  <div class="px-5 py-6">
-    <!-- Scope Selection -->
-    <div class="bg-white rounded-2xl p-5 shadow-md mb-4">
-      <h3 class="font-bold text-gray-800 mb-3">O que o mÃ©dico pode ver?</h3>
-      <div class="space-y-2">
-        <label class="flex items-center gap-3 p-3 rounded-xl cursor-pointer hover:bg-gray-50">
-          <input type="checkbox" checked class="w-4 h-4 rounded" style="accent-color:#0097B2">
-          <span class="text-sm text-gray-700">Ficha essencial (nome, idade, medicamentos)</span>
-        </label>
-        <label class="flex items-center gap-3 p-3 rounded-xl cursor-pointer hover:bg-gray-50">
-          <input type="checkbox" checked class="w-4 h-4 rounded" style="accent-color:#0097B2">
-          <span class="text-sm text-gray-700">Exames dos Ãºltimos 6 meses</span>
-        </label>
-        <label class="flex items-center gap-3 p-3 rounded-xl cursor-pointer hover:bg-gray-50">
-          <input type="checkbox" class="w-4 h-4 rounded" style="accent-color:#0097B2">
-          <span class="text-sm text-gray-700">HistÃ³rico completo</span>
-        </label>
-        <label class="flex items-center gap-3 p-3 rounded-xl cursor-pointer hover:bg-gray-50">
-          <input type="checkbox" class="w-4 h-4 rounded" style="accent-color:#0097B2">
-          <span class="text-sm text-gray-700">QuestionÃ¡rio pessoal</span>
-        </label>
-      </div>
-    </div>
-
-    <!-- Duration -->
-    <div class="bg-white rounded-2xl p-5 shadow-md mb-5">
-      <h3 class="font-bold text-gray-800 mb-3">VÃ¡lido por</h3>
-      <div class="flex gap-2">
-        <button class="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white" style="background:#0097B2">30 min</button>
-        <button class="flex-1 py-2.5 rounded-xl text-sm font-semibold border-2 text-gray-600" style="border-color:#e5e7eb">1 hora</button>
-        <button class="flex-1 py-2.5 rounded-xl text-sm font-semibold border-2 text-gray-600" style="border-color:#e5e7eb">24 horas</button>
-      </div>
-    </div>
-
-    <button onclick="generateCode()" class="w-full py-4 rounded-2xl text-white font-bold text-base shadow-lg" style="background:#0097B2">
-      Gerar CÃ³digo de Acesso
-    </button>
-  </div>
-
-  <!-- Generated Code -->
-  <div id="code-display" class="hidden px-5 pb-6 fade-in">
-    <div class="bg-white rounded-2xl p-6 shadow-lg text-center border-2" style="border-color:#0097B2">
-      <p class="text-sm text-gray-500 mb-2">CÃ³digo de acesso</p>
-      <div class="text-4xl font-black tracking-widest mb-1" style="color:#0097B2" id="access-code">SAÃDE-7K4P-92</div>
-      <div class="flex items-center justify-center gap-1.5 mt-2 mb-4">
-        <div class="w-2 h-2 bg-green-500 rounded-full pulse-dot"></div>
-        <span class="text-sm text-gray-500">VÃ¡lido por <span id="countdown">30:00</span></span>
-      </div>
-      <p class="text-xs text-gray-400">VisualizaÃ§Ã£o via QR â sem cÃ³pia, sem retenÃ§Ã£o</p>
-      <div class="mt-4 p-3 rounded-xl text-xs text-left" style="background:#E0F7FB; color:#006E82">
-        ð MÃ©dico define escopo â¢ Resumo clÃ­nico + linha do tempo â¢ IA diferenciada do original
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- =================== TELA 4: MÃDICO â ENTRADA =================== -->
-<div id="screen-doctor-entry" class="hidden min-h-screen bg-gray-50">
-  <div class="gradient-bg px-5 pt-10 pb-6">
-    <button onclick="goTo('screen-home')" class="text-white opacity-70 hover:opacity-100 mb-4 block">
-      <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-    </button>
-    <h2 class="text-white text-2xl font-bold">Acesso MÃ©dico</h2>
-    <p class="text-white opacity-70 text-sm mt-1">Insira o cÃ³digo fornecido pelo paciente</p>
-  </div>
-
-  <div class="px-5 py-8">
-    <div class="bg-white rounded-2xl p-6 shadow-md">
-      <div class="text-center mb-6">
-        <div class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-3" style="background:#E0F7FB">
-          <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="#0097B2" stroke-width="1.5"><path d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
-        </div>
-        <p class="text-sm text-gray-500">O paciente gera um cÃ³digo temporÃ¡rio que expira automaticamente</p>
-      </div>
-      <label class="block text-sm font-semibold text-gray-700 mb-2">CÃ³digo do paciente</label>
-      <input id="doctor-code" type="text" placeholder="Ex: SAÃDE-7K4P-92" class="w-full border-2 rounded-xl px-4 py-3 text-center text-lg font-bold tracking-widest focus:outline-none mb-4 uppercase" style="border-color:#0097B2; color:#0097B2" oninput="this.value=this.value.toUpperCase()">
-      <button onclick="accessPatient()" class="w-full py-3.5 rounded-xl text-white font-bold" style="background:#0097B2">Acessar HistÃ³rico</button>
-      <p class="text-center text-xs text-gray-400 mt-3">Acesso rastreado â¢ Sem retenÃ§Ã£o de dados â¢ LGPD compliant</p>
-    </div>
-
-    <!-- Demo hint -->
-    <div class="mt-4 p-4 rounded-xl text-sm text-center" style="background:#E0F7FB; color:#006E82">
-      ð¡ <strong>Demo:</strong> Use o cÃ³digo <strong>SAÃDE-7K4P-92</strong> para testar
-    </div>
-  </div>
-</div>
-
-<!-- =================== TELA 5: MÃDICO â HISTÃRICO =================== -->
-<div id="screen-doctor-view" class="hidden min-h-screen bg-gray-50">
-  <div class="gradient-bg px-5 pt-10 pb-20">
-    <button onclick="goTo('screen-doctor-entry')" class="text-white opacity-70 hover:opacity-100 mb-4 block">
-      <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-    </button>
-    <div class="flex items-center justify-between">
+<!-- ===================== DOCTOR MODAL ===================== -->
+<div id="doctor-modal" class="hidden fixed inset-0 flex items-center justify-center z-50 p-4" style="background:rgba(0,0,0,0.6)">
+  <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 fade">
+    <div class="flex items-start justify-between mb-5">
       <div>
-        <h2 class="text-white text-2xl font-bold">Maria Aparecida</h2>
-        <p class="text-white opacity-70 text-sm">F, 42 anos â¢ Tipo O+</p>
+        <h2 class="text-xl font-bold text-gray-900">Acesso do Médico</h2>
+        <p class="text-sm text-gray-500 mt-0.5">Digite o código gerado pelo paciente</p>
       </div>
-      <div class="text-right">
-        <div class="chip bg-green-500 text-white">â Acesso ativo</div>
-        <div class="text-white opacity-70 text-xs mt-1">Expira em 29:47</div>
-      </div>
+      <button onclick="closeDoctorModal()" class="text-gray-400 hover:text-gray-600 mt-0.5">
+        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
     </div>
-  </div>
-
-  <div class="px-5 -mt-12">
-    <!-- Ficha Essencial -->
-    <div class="bg-white rounded-2xl p-5 shadow-md mb-4 fade-in">
-      <h3 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
-        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="#0097B2" stroke-width="2"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-        Ficha Essencial
-      </h3>
-      <div class="grid grid-cols-2 gap-3">
-        <div class="p-3 rounded-xl bg-gray-50"><div class="text-xs text-gray-400">Peso</div><div class="font-semibold text-sm">67 kg</div></div>
-        <div class="p-3 rounded-xl bg-gray-50"><div class="text-xs text-gray-400">Altura</div><div class="font-semibold text-sm">1,65 m</div></div>
-        <div class="p-3 rounded-xl bg-gray-50"><div class="text-xs text-gray-400">IMC</div><div class="font-semibold text-sm text-orange-500">24.6 â </div></div>
-        <div class="p-3 rounded-xl bg-gray-50"><div class="text-xs text-gray-400">PressÃ£o habitual</div><div class="font-semibold text-sm">120/80</div></div>
-      </div>
-      <div class="mt-3 p-3 rounded-xl" style="background:#FFF3E0">
-        <p class="text-xs font-semibold text-orange-700 mb-1">Medicamentos em uso</p>
-        <p class="text-xs text-orange-600">Metformina 500mg â¢ Atenolol 25mg</p>
-      </div>
+    <div id="dm-input">
+      <label class="block text-sm font-medium text-gray-700 mb-2">Código de acesso</label>
+      <input id="dm-code" type="text" placeholder="SAUDE-XXXX-XX"
+        class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-center text-xl font-mono tracking-widest uppercase focus:outline-none focus:border-teal-400"
+        oninput="this.value=this.value.toUpperCase()"
+        onkeydown="if(event.key==='Enter')verifyCode()">
+      <div class="text-xs text-center mt-2" style="color:#6b7280">Código demo: <strong>SAUDE-7K4P-92</strong></div>
+      <p id="dm-error" class="hidden text-red-500 text-sm text-center mt-2">Código inválido ou expirado.</p>
+      <button onclick="verifyCode()" class="w-full text-white rounded-xl py-3 font-semibold mt-4" style="background:#0d9488">
+        Acessar histórico
+      </button>
     </div>
-
-    <!-- Alertas IA -->
-    <div class="bg-white rounded-2xl p-5 shadow-md mb-4 fade-in">
-      <h3 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
-        <svg class="w-5 h-5 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-        Anomalias detectadas pela IA
-      </h3>
-      <div class="space-y-2">
-        <div class="flex items-start gap-2 p-3 rounded-xl bg-orange-50">
-          <span class="text-orange-500 text-sm font-bold mt-0.5">â </span>
-          <div><div class="text-sm font-semibold text-orange-700">Hemoglobina 11.2 g/dL</div><div class="text-xs text-orange-600">Abaixo do valor de referÃªncia â Hemograma 14/11/2026</div></div>
-        </div>
-        <div class="flex items-start gap-2 p-3 rounded-xl bg-yellow-50">
-          <span class="text-yellow-500 text-sm font-bold mt-0.5">â</span>
-          <div><div class="text-sm font-semibold text-yellow-700">Glicemia 108 mg/dL</div><div class="text-xs text-yellow-600">LimÃ­trofe â Glicemia Jejum 02/11/2026</div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Linha do Tempo -->
-    <div class="bg-white rounded-2xl p-5 shadow-md mb-4 fade-in">
-      <h3 class="font-bold text-gray-800 mb-4 flex items-center gap-2">
-        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="#0097B2" stroke-width="2"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-        Linha do Tempo
-      </h3>
-      <div class="relative pl-5">
-        <div class="absolute left-2 top-0 bottom-0 w-0.5 bg-gray-200"></div>
-        <div class="space-y-5">
-          <div class="relative"><div class="absolute -left-3 w-4 h-4 rounded-full border-2 border-white" style="background:#0097B2"></div>
-            <div class="text-xs text-gray-400">14 Nov 2026</div>
-            <div class="text-sm font-semibold text-gray-800">Hemograma Completo</div>
-            <div class="text-xs text-gray-500">Fleury â¢ Hb 11.2 g/dL â </div>
-          </div>
-          <div class="relative"><div class="absolute -left-3 w-4 h-4 rounded-full border-2 border-white" style="background:#0097B2"></div>
-            <div class="text-xs text-gray-400">02 Nov 2026</div>
-            <div class="text-sm font-semibold text-gray-800">Glicemia em Jejum</div>
-            <div class="text-xs text-gray-500">LaboratÃ³rio SÃ£o Luiz â¢ 108 mg/dL</div>
-          </div>
-          <div class="relative"><div class="absolute -left-3 w-4 h-4 rounded-full border-2 border-white bg-green-500"></div>
-            <div class="text-xs text-gray-400">15 Out 2026</div>
-            <div class="text-sm font-semibold text-gray-800">Consulta ClÃ­nico Geral</div>
-            <div class="text-xs text-gray-500">Dr. Carlos Mendes â¢ RevisÃ£o geral</div>
-          </div>
-          <div class="relative"><div class="absolute -left-3 w-4 h-4 rounded-full border-2 border-white" style="background:#0097B2"></div>
-            <div class="text-xs text-gray-400">08 Set 2026</div>
-            <div class="text-sm font-semibold text-gray-800">Ultrassom Abdominal</div>
-            <div class="text-xs text-gray-500">Fleury â¢ Normal</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Aviso LGPD -->
-    <div class="p-4 rounded-xl text-xs text-center mb-6" style="background:#E0F7FB; color:#006E82">
-      ð Acesso rastreado e registrado â¢ Dados de IA diferenciados do documento original â¢ Sem retenÃ§Ã£o apÃ³s expiraÃ§Ã£o
+    <div id="dm-loading" class="hidden text-center py-6">
+      <div class="w-10 h-10 border-4 rounded-full spin mx-auto mb-3" style="border-color:#ccfbf1;border-top-color:#0d9488"></div>
+      <p class="text-gray-600">Verificando acesso...</p>
     </div>
   </div>
 </div>
 
-</div><!-- /app -->
+<!-- ===================== DOCTOR VIEW ===================== -->
+<div id="doctor-view" class="hidden fixed inset-0 overflow-y-auto z-40" style="background:#f8fafc">
+  <div id="doctor-view-content"></div>
+</div>
 
 <script>
-// =================== APP STATE ===================
+// ---- DATA ----
 const docs = [
-  { type: 'Hemograma Completo', lab: 'Fleury', date: '14/11/2026', category: 'exame', alert: true, detail: 'Hb 11.2 g/dL â ' },
-  { type: 'Glicemia em Jejum', lab: 'Lab SÃ£o Luiz', date: '02/11/2026', category: 'exame', alert: true, detail: '108 mg/dL â limÃ­trofe' },
-  { type: 'Consulta ClÃ­nico Geral', lab: 'Dr. Carlos Mendes', date: '15/10/2026', category: 'consulta', alert: false, detail: 'RevisÃ£o anual' },
-  { type: 'Ultrassom Abdominal', lab: 'Fleury', date: '08/09/2026', category: 'exame', alert: false, detail: 'Normal' },
-  { type: 'Receita â Metformina', lab: 'Dr. Carlos Mendes', date: '15/10/2026', category: 'receita', alert: false, detail: '500mg, 2x ao dia' },
+  { id:1, type:'Exame',    name:'Hemograma Completo',              source:'Fleury',           date:'15/10/2024', desc:'Resultado: Normal',                 icon:'🧪' },
+  { id:2, type:'Laudo',    name:'Ecocardiograma',                  source:'CardioCenter',     date:'03/09/2024', desc:'FE: 65% — Normal',                  icon:'❤️' },
+  { id:3, type:'Receita',  name:'Losartana 50mg',                  source:'Dr. Carlos Menezes',date:'20/08/2024', desc:'1x ao dia — 90 dias',               icon:'💊' },
+  { id:4, type:'Consulta', name:'Consulta de Cardiologia',         source:'Dr. Carlos Menezes',date:'20/08/2024', desc:'Pressão controlada. Manter Losartana.',icon:'👨‍⚕️'},
+  { id:5, type:'Exame',    name:'Ressonância Magnética — Coluna',  source:'DASA',             date:'12/07/2024', desc:'Sem alterações significativas',      icon:'🔬' },
+  { id:6, type:'Vacina',   name:'Influenza 2024',                  source:'UBS Vila Mariana', date:'05/04/2024', desc:'Lote: FLU24-BR',                     icon:'💉' },
 ];
 
-const catColors = { exame:'#0097B2', consulta:'#10B981', receita:'#8B5CF6' };
-const catIcons = {
-  exame:'<path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h4"/>',
-  consulta:'<path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>',
-  receita:'<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>'
-};
+const consultas = [
+  { id:1, spec:'Cardiologia',  doctor:'Dr. Carlos Menezes', date:'20/08/2024', local:'CardioCenter — SP',         status:'Realizada', notes:'Pressão controlada. Manter Losartana 50mg.' },
+  { id:2, spec:'Ortopedia',    doctor:'Dra. Paula Fonseca', date:'12/07/2024', local:'Hospital Sírio-Libanês',    status:'Realizada', notes:'RM sem alterações. Fisioterapia recomendada.' },
+  { id:3, spec:'Clínico Geral',doctor:'Dr. André Lima',    date:'05/06/2024', local:'UBS Vila Mariana',           status:'Realizada', notes:'Check-up anual. Todos os exames normais.' },
+];
 
-function goTo(id) {
-  document.querySelectorAll('#app > div').forEach(d => d.classList.add('hidden'));
-  const el = document.getElementById(id);
-  if(el) { el.classList.remove('hidden'); el.classList.add('fade-in'); }
-  window.scrollTo(0,0);
+// ---- STATE ----
+let currentScreen = '';
+let generatedCode = '';
+let codeTimeLeft = 1800;
+let codeTimerID = null;
+let docFilter = 'Todos';
+
+// ---- NAV ----
+const SCREENS = ['inicio','documentos','consultas','compartilhar','saude','perfil','dispositivos','acessos','conta','assinatura'];
+
+function nav(s) {
+  currentScreen = s;
+  SCREENS.forEach(x => {
+    const el = document.getElementById('nav-' + x);
+    if (!el) return;
+    el.classList.remove('nav-active');
+    el.style.color = '#9ca3af';
+  });
+  const a = document.getElementById('nav-' + s);
+  if (a) { a.classList.add('nav-active'); a.style.color = ''; }
+  render(s);
 }
 
-function renderDocs() {
-  const list = document.getElementById('doc-list');
-  if(!list) return;
-  list.innerHTML = docs.map(d => `
-    <div class="bg-white rounded-xl p-4 shadow-sm flex items-center gap-3 doc-card border border-gray-100">
-      <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:${catColors[d.category]}20">
-        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="${catColors[d.category]}" stroke-width="1.8">${catIcons[d.category]}</svg>
+function render(s) {
+  const main = document.getElementById('main');
+  const wrap = document.createElement('div');
+  wrap.className = 'fade p-6';
+  switch(s) {
+    case 'inicio':       wrap.innerHTML = screenInicio(); break;
+    case 'documentos':   wrap.innerHTML = screenDocumentos(); break;
+    case 'consultas':    wrap.innerHTML = screenConsultas(); break;
+    case 'compartilhar': wrap.innerHTML = screenCompartilhar(); break;
+    case 'saude':        wrap.innerHTML = screenSaude(); break;
+    case 'perfil':       wrap.innerHTML = screenPerfil(); break;
+    case 'dispositivos': wrap.innerHTML = screenDispositivos(); break;
+    case 'acessos':      wrap.innerHTML = screenAcessos(); break;
+    case 'conta':        wrap.innerHTML = screenConta(); break;
+    case 'assinatura':   wrap.innerHTML = screenAssinatura(); break;
+    default: wrap.innerHTML = screenInicio();
+  }
+  main.innerHTML = '';
+  main.appendChild(wrap);
+  if (s === 'compartilhar' && generatedCode) refreshCodeDisplay();
+}
+
+// ---- TIPO COLOR ----
+function typeColor(t) {
+  return { Exame:'bg-blue-50 text-blue-700', Laudo:'bg-purple-50 text-purple-700', Consulta:'bg-green-50 text-green-700', Receita:'bg-orange-50 text-orange-700', Vacina:'bg-pink-50 text-pink-700' }[t] || 'bg-gray-100 text-gray-600';
+}
+
+// ---- SCREENS ----
+function screenInicio() {
+  return `
+  <div class="max-w-3xl">
+    <div class="flex items-center justify-between mb-5">
+      <div>
+        <p class="text-sm text-gray-500">Olá,</p>
+        <h1 class="text-2xl font-bold text-gray-900">Maria Aparecida</h1>
       </div>
-      <div class="flex-1 min-w-0">
-        <div class="flex items-center gap-2">
-          <span class="text-sm font-semibold text-gray-800 truncate">${d.type}</span>
-          ${d.alert ? '<span class="chip bg-orange-100 text-orange-600 flex-shrink-0">â  Alerta</span>' : ''}
-        </div>
-        <div class="text-xs text-gray-500 mt-0.5">${d.lab} â¢ ${d.date}</div>
-        <div class="text-xs mt-0.5" style="color:${catColors[d.category]}">${d.detail}</div>
-      </div>
-      <svg class="w-4 h-4 text-gray-300 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      <button class="text-sm font-medium" style="color:#0d9488">Mostrar nomes</button>
     </div>
-  `).join('');
+
+    <div class="rounded-xl p-3 mb-5 flex items-start gap-3 border" style="background:#eff6ff;border-color:#bfdbfe">
+      <svg class="w-4 h-4 mt-0.5 flex-shrink-0" style="color:#3b82f6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01"/></svg>
+      <div>
+        <p class="text-sm font-medium" style="color:#1e40af">Seu acesso é oferecido por AnaMedis (demonstração)</p>
+        <p class="text-xs mt-0.5" style="color:#3b82f6">A operadora não recebe acesso ao seu histórico.</p>
+      </div>
+    </div>
+
+    <div class="rounded-2xl p-6 mb-5 relative overflow-hidden" style="background:linear-gradient(135deg,#134e4a 0%,#0d9488 60%,#0891b2 100%)">
+      <div class="relative z-10">
+        <p class="text-sm mb-1" style="color:#a7f3d0">Vai a uma consulta?</p>
+        <h2 class="font-bold text-xl text-white mb-1">Mostre todo o seu histórico ao médico com um código</h2>
+        <p class="text-sm mb-5" style="color:#99f6e4">Você escolhe o que ele vê e por quanto tempo. Evite repetir exames que você já fez.</p>
+        <div class="flex gap-3 flex-wrap">
+          <button onclick="nav('compartilhar');setTimeout(gerarCodigo,80)" class="text-white rounded-xl px-5 py-2.5 text-sm font-semibold flex items-center gap-2 transition-all" style="background:rgba(0,0,0,0.25)">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+            Gerar código para o médico
+          </button>
+          <button onclick="openDoctorModal()" class="text-white rounded-xl px-5 py-2.5 text-sm font-semibold transition-all" style="background:rgba(255,255,255,0.18)">
+            Recebi um código do médico
+          </button>
+        </div>
+      </div>
+      <div class="absolute -right-6 -top-6 w-28 h-28 rounded-full" style="background:rgba(255,255,255,0.05)"></div>
+      <div class="absolute right-2 bottom-0 w-16 h-16 rounded-full" style="background:rgba(255,255,255,0.05)"></div>
+    </div>
+
+    <div class="bg-white rounded-xl border border-gray-100 p-4 mb-4">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="font-semibold text-sm text-gray-900">Seu histórico</h3>
+        <button onclick="nav('documentos')" class="text-xs font-medium" style="color:#0d9488">Ver tudo →</button>
+      </div>
+      <div class="grid grid-cols-3 divide-x divide-gray-100">
+        <div class="text-center px-3 py-1"><div class="text-2xl font-bold text-gray-900">6</div><div class="text-xs text-gray-500 mt-0.5">Documentos</div></div>
+        <div class="text-center px-3 py-1"><div class="text-2xl font-bold text-gray-900">3</div><div class="text-xs text-gray-500 mt-0.5">Exames</div></div>
+        <div class="text-center px-3 py-1"><div class="text-2xl font-bold text-gray-900">1</div><div class="text-xs text-gray-500 mt-0.5">Receitas</div></div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-xl border border-gray-100 p-4">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="font-semibold text-sm text-gray-900">Dispositivos</h3>
+        <button onclick="nav('dispositivos')" class="text-xs font-medium" style="color:#0d9488">Conectar →</button>
+      </div>
+      <p class="text-sm text-gray-500 mb-1">Nenhum dispositivo conectado</p>
+      <p class="text-xs text-gray-400 mb-3">Conecte um relógio, anel ou cinta para ver frequência cardíaca, sono e passos aqui.</p>
+      <div class="grid grid-cols-3 gap-2">
+        ${[['⌚','Relógio ou anel'],['🩺','Cinta Bluetooth'],['📱','Outro aplicativo']].map(([ic,lb])=>`
+          <div class="border border-gray-100 rounded-xl p-3 text-center cursor-pointer hover:border-teal-200 transition-colors" style="">
+            <div class="text-xl mb-1">${ic}</div>
+            <div class="text-xs text-gray-500 font-medium">${lb}</div>
+          </div>`).join('')}
+      </div>
+    </div>
+  </div>`;
 }
 
-// =================== UPLOAD / AI FLOW ===================
-function startAI() {
-  document.getElementById('upload-step-1').classList.add('hidden');
-  document.getElementById('ai-processing').classList.remove('hidden');
-  const statuses = ['Identificando tipo de exame...', 'Lendo laboratÃ³rio e data...', 'Extraindo valores e referÃªncias...', 'Verificando anomalias...', 'Finalizando...'];
-  let step = 0;
-  const statusEl = document.getElementById('ai-status');
-  const progressEl = document.getElementById('ai-progress');
-  const interval = setInterval(() => {
-    step++;
-    statusEl.textContent = statuses[Math.min(step, statuses.length-1)];
-    progressEl.style.width = (step * 20) + '%';
-    if(step >= 5) {
-      clearInterval(interval);
-      setTimeout(() => {
-        document.getElementById('ai-processing').classList.add('hidden');
-        document.getElementById('ai-result').classList.remove('hidden');
-      }, 400);
+function screenDocumentos() {
+  return `
+  <div class="max-w-3xl">
+    <div class="flex items-center justify-between mb-5">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900">Meus documentos</h1>
+        <p class="text-sm text-gray-500 mt-0.5">${docs.length} documentos no seu histórico</p>
+      </div>
+      <button class="text-white rounded-xl px-4 py-2 text-sm font-semibold flex items-center gap-2" style="background:#0d9488">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+        Adicionar
+      </button>
+    </div>
+    <div class="relative mb-3">
+      <svg class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+      <input id="dsearch" type="text" placeholder="Buscar por nome"
+        class="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-teal-400 bg-white"
+        oninput="filterDocs()">
+    </div>
+    <div class="flex gap-2 mb-4 overflow-x-auto pb-1">
+      ${['Todos','Exame','Laudo','Consulta','Receita','Vacina'].map(f=>`
+        <button onclick="setFilter('${f}')" id="f-${f}"
+          class="flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium border transition-colors ${f==='Todos'?'text-white border-transparent':'text-gray-600 bg-white border-gray-200'}"
+          style="${f==='Todos'?'background:#0d9488':''}">${f}</button>`).join('')}
+    </div>
+    <div id="doclist" class="space-y-2">${docRows(docs)}</div>
+  </div>`;
+}
+
+function docRows(list) {
+  if (!list.length) return '<div class="text-center py-12 text-gray-400"><div class="text-4xl mb-3">📄</div><p>Nenhum documento encontrado</p></div>';
+  return list.map(d=>`
+    <div class="doc-row bg-white rounded-xl border border-gray-100 p-4 flex items-center gap-3 cursor-pointer transition-colors">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0" style="background:#f0fdfa">${d.icon}</div>
+      <div class="flex-1 min-w-0">
+        <div class="font-medium text-sm text-gray-900 truncate">${d.name}</div>
+        <div class="text-xs text-gray-500 mt-0.5">${d.source} · ${d.date}</div>
+      </div>
+      <span class="text-xs px-2.5 py-1 rounded-full font-medium ${typeColor(d.type)}">${d.type}</span>
+    </div>`).join('');
+}
+
+function setFilter(f) {
+  docFilter = f;
+  ['Todos','Exame','Laudo','Consulta','Receita','Vacina'].forEach(x=>{
+    const b = document.getElementById('f-'+x);
+    if (!b) return;
+    if (x===f) { b.style.background='#0d9488'; b.style.color='white'; b.style.borderColor='transparent'; }
+    else        { b.style.background='white';    b.style.color='#4b5563'; b.style.borderColor='#e5e7eb'; }
+  });
+  filterDocs();
+}
+
+function filterDocs() {
+  const q = (document.getElementById('dsearch')?.value||'').toLowerCase();
+  const list = docs.filter(d=>(docFilter==='Todos'||d.type===docFilter)&&(!q||d.name.toLowerCase().includes(q)||d.source.toLowerCase().includes(q)));
+  const el = document.getElementById('doclist');
+  if (el) el.innerHTML = docRows(list);
+}
+
+function screenConsultas() {
+  return `
+  <div class="max-w-3xl">
+    <div class="flex items-center justify-between mb-5">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900">Consultas</h1>
+        <p class="text-sm text-gray-500 mt-0.5">${consultas.length} consultas registradas</p>
+      </div>
+      <button class="text-white rounded-xl px-4 py-2 text-sm font-semibold flex items-center gap-2" style="background:#0d9488">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+        Adicionar
+      </button>
+    </div>
+    <div class="space-y-3">
+      ${consultas.map(c=>`
+        <div class="bg-white rounded-xl border border-gray-100 p-4 hover:border-teal-200 cursor-pointer transition-all">
+          <div class="flex items-start justify-between mb-2">
+            <div>
+              <div class="font-semibold text-sm text-gray-900">${c.spec}</div>
+              <div class="text-sm text-gray-600 mt-0.5">${c.doctor}</div>
+            </div>
+            <span class="text-xs px-2.5 py-1 bg-green-50 text-green-700 rounded-full font-medium">${c.status}</span>
+          </div>
+          <div class="flex gap-4 text-xs text-gray-400 mb-2">
+            <span>📅 ${c.date}</span>
+            <span>📍 ${c.local}</span>
+          </div>
+          <p class="text-xs text-gray-600 bg-gray-50 rounded-lg p-2">${c.notes}</p>
+        </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+function screenCompartilhar() {
+  const hasCode = !!generatedCode;
+  return `
+  <div class="max-w-2xl">
+    <div class="mb-5">
+      <h1 class="text-2xl font-bold text-gray-900">Compartilhar histórico</h1>
+      <p class="text-sm text-gray-500 mt-0.5">Compartilhe seus documentos com seu médico de forma segura e temporária</p>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-gray-100 p-6 mb-4">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#f0fdfa">
+          <svg class="w-5 h-5" style="color:#0d9488" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+        </div>
+        <div>
+          <h3 class="font-semibold text-gray-900">Gerar código para o médico</h3>
+          <p class="text-xs text-gray-500">O médico digita o código na plataforma para acessar seu histórico</p>
+        </div>
+      </div>
+
+      <div id="code-display" class="${hasCode?'':'hidden'} mb-4">
+        <div class="rounded-xl p-5 text-center mb-3 border-2" style="background:#f0fdfa;border-color:#99f6e4">
+          <p class="text-xs font-medium mb-1" style="color:#0d9488">Código de acesso</p>
+          <div id="code-val" class="text-3xl font-black tracking-widest font-mono mb-2" style="color:#134e4a">${generatedCode}</div>
+          <div class="flex items-center justify-center gap-1 text-xs" style="color:#0d9488">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Válido por <span id="timer" class="font-bold ml-1">30:00</span>
+          </div>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="copyCode()" class="flex-1 text-white rounded-xl py-2.5 text-sm font-semibold flex items-center justify-center gap-2" style="background:#0d9488">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copiar código
+          </button>
+          <button onclick="gerarCodigo()" class="px-4 border border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50">Novo</button>
+        </div>
+      </div>
+
+      <div id="gen-btn" class="${hasCode?'hidden':''}">
+        <button onclick="gerarCodigo()" class="w-full text-white rounded-xl py-3 font-semibold flex items-center justify-center gap-2" style="background:#0d9488">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+          Gerar código para o médico
+        </button>
+      </div>
+
+      <div class="mt-4 flex items-start gap-2 text-xs text-gray-400">
+        <svg class="w-3.5 h-3.5 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        O acesso expira automaticamente. Nenhum dado fica salvo no dispositivo do médico. LGPD compliant.
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-gray-100 p-6">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#eff6ff">
+          <svg class="w-5 h-5" style="color:#3b82f6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+        </div>
+        <div>
+          <h3 class="font-semibold text-gray-900">Sou médico — acessar histórico</h3>
+          <p class="text-xs text-gray-500">Digite o código que o paciente gerou</p>
+        </div>
+      </div>
+      <button onclick="openDoctorModal()" class="w-full border border-teal-200 rounded-xl py-3 text-sm font-semibold transition-colors hover:bg-teal-50" style="color:#0d9488">
+        Acessar com código do paciente
+      </button>
+    </div>
+  </div>`;
+}
+
+function screenSaude() {
+  return `
+  <div class="max-w-2xl">
+    <div class="mb-5">
+      <h1 class="text-2xl font-bold text-gray-900">Minha Saúde</h1>
+      <p class="text-sm text-gray-500 mt-0.5">Seus dados de saúde e bem-estar</p>
+    </div>
+    <div class="grid grid-cols-2 gap-3 mb-4">
+      ${[
+        {ic:'❤️',lb:'Pressão arterial',val:'120/80',un:'mmHg',st:'Normal',sc:'text-green-600 bg-green-50'},
+        {ic:'🫀',lb:'Freq. cardíaca',  val:'72',    un:'bpm',  st:'Normal',sc:'text-green-600 bg-green-50'},
+        {ic:'⚖️',lb:'Peso',            val:'62',    un:'kg',   st:'IMC 23.8',sc:'text-blue-600 bg-blue-50'},
+        {ic:'🩺',lb:'Glicemia',        val:'95',    un:'mg/dL',st:'Normal',sc:'text-green-600 bg-green-50'},
+      ].map(v=>`
+        <div class="bg-white rounded-xl border border-gray-100 p-4">
+          <div class="flex items-center gap-2 mb-2 text-xs text-gray-500 font-medium"><span class="text-lg">${v.ic}</span>${v.lb}</div>
+          <div class="flex items-baseline gap-1 mb-1"><span class="text-2xl font-bold text-gray-900">${v.val}</span><span class="text-sm text-gray-500">${v.un}</span></div>
+          <span class="text-xs px-2 py-0.5 rounded-full font-medium ${v.sc}">${v.st}</span>
+        </div>`).join('')}
+    </div>
+    <div class="bg-white rounded-xl border border-gray-100 p-4 mb-3">
+      <h3 class="font-semibold text-sm text-gray-900 mb-3">Alergias e contraindicações</h3>
+      <div class="flex gap-2 flex-wrap">
+        <span class="px-3 py-1 rounded-full text-xs font-medium border" style="background:#fef2f2;color:#dc2626;border-color:#fecaca">🚫 Penicilina</span>
+        <span class="px-3 py-1 rounded-full text-xs font-medium border" style="background:#fefce8;color:#ca8a04;border-color:#fef08a">⚠️ Látex (leve)</span>
+        <button class="px-3 py-1 rounded-full text-xs font-medium border border-dashed border-gray-200 text-gray-400 hover:border-teal-300 hover:text-teal-600 transition-colors">+ Adicionar</button>
+      </div>
+    </div>
+    <div class="bg-white rounded-xl border border-gray-100 p-4">
+      <h3 class="font-semibold text-sm text-gray-900 mb-3">Medicamentos em uso</h3>
+      ${[
+        {name:'Losartana 50mg',dose:'1x ao dia',ini:'desde 20/08/2024'},
+        {name:'Ômega-3 1g',   dose:'1x ao dia',ini:'desde 05/06/2024'},
+      ].map(m=>`
+        <div class="flex items-center justify-between py-2.5 border-b border-gray-50 last:border-0">
+          <div><div class="text-sm font-medium text-gray-800">💊 ${m.name}</div><div class="text-xs text-gray-500">${m.dose} · ${m.ini}</div></div>
+          <span class="text-xs px-2 py-0.5 rounded-full" style="background:#fff7ed;color:#ea580c">Em uso</span>
+        </div>`).join('')}
+      <button class="text-sm font-medium mt-2" style="color:#0d9488">+ Adicionar medicamento</button>
+    </div>
+  </div>`;
+}
+
+function screenPerfil() {
+  return `
+  <div class="max-w-2xl">
+    <div class="mb-5">
+      <h1 class="text-2xl font-bold text-gray-900">Perfil</h1>
+      <p class="text-sm text-gray-500 mt-0.5">Sua conta, suas informações e seu histórico de saúde</p>
+    </div>
+    <div class="bg-white rounded-xl border border-gray-100 p-4 mb-4">
+      <h3 class="font-semibold text-sm text-gray-900 mb-3">Conta</h3>
+      <div class="rounded-lg p-3 mb-3 flex items-start gap-2 border" style="background:#eff6ff;border-color:#bfdbfe">
+        <svg class="w-4 h-4 mt-0.5 flex-shrink-0" style="color:#3b82f6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01"/></svg>
+        <div class="flex-1">
+          <p class="text-xs font-medium" style="color:#1e40af">Demonstração — AnaMedis Hackathon</p>
+          <p class="text-xs mt-0.5" style="color:#3b82f6">A operadora não recebe acesso ao seu histórico.</p>
+        </div>
+        <button class="text-xs font-medium flex-shrink-0" style="color:#3b82f6">Ver vínculo</button>
+      </div>
+      <div class="flex items-center justify-between p-3 rounded-lg" style="background:#f8fafc">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm" style="background:#ccfbf1;color:#0d9488">MA</div>
+          <div>
+            <div class="font-semibold text-sm text-gray-900">Maria Aparecida</div>
+            <div class="text-xs text-gray-500">Informações declaradas por você</div>
+          </div>
+        </div>
+        <button class="text-xs font-medium flex items-center gap-1" style="color:#0d9488">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+          Revisar questionário
+        </button>
+      </div>
+    </div>
+    <div class="bg-white rounded-xl border border-gray-100 p-4">
+      <h3 class="font-semibold text-sm text-gray-900 mb-4 flex items-center gap-2">
+        <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+        Sobre você
+      </h3>
+      <div class="space-y-4">
+        <div><label class="block text-xs font-medium text-gray-500 mb-1">Nome completo</label>
+          <input type="text" value="Maria Aparecida" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-400"></div>
+        <div class="grid grid-cols-2 gap-3">
+          <div><label class="block text-xs font-medium text-gray-500 mb-1">Data de nascimento</label>
+            <input type="date" value="1982-03-15" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-400"></div>
+          <div><label class="block text-xs font-medium text-gray-500 mb-1">Idade</label>
+            <input type="text" value="42 anos" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-gray-50" readonly></div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div><label class="block text-xs font-medium text-gray-500 mb-1">Altura (cm)</label>
+            <input type="text" value="162" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-400"></div>
+          <div><label class="block text-xs font-medium text-gray-500 mb-1">Peso (kg)</label>
+            <input type="text" value="62" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-400"></div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div><label class="block text-xs font-medium text-gray-500 mb-1">Tipo sanguíneo</label>
+            <select class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-400">
+              <option selected>O+</option><option>O-</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option>
+            </select></div>
+          <div><label class="block text-xs font-medium text-gray-500 mb-1">Sexo biológico</label>
+            <select class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-400">
+              <option selected>Feminino</option><option>Masculino</option>
+            </select></div>
+        </div>
+        <button class="w-full text-white rounded-xl py-2.5 text-sm font-semibold" style="background:#0d9488">Salvar alterações</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function screenDispositivos() {
+  return `
+  <div class="max-w-2xl">
+    <div class="mb-5"><h1 class="text-2xl font-bold text-gray-900">Dispositivos</h1>
+      <p class="text-sm text-gray-500 mt-0.5">Conecte wearables para monitorar seus dados de saúde</p></div>
+    <div class="bg-white rounded-xl border border-gray-100 p-6 text-center">
+      <div class="text-5xl mb-4">⌚</div>
+      <h3 class="font-semibold text-gray-900 mb-2">Nenhum dispositivo conectado</h3>
+      <p class="text-sm text-gray-500 mb-5 max-w-sm mx-auto">Conecte um relógio, anel ou cinta para ver frequência cardíaca, sono, passos e outros dados aqui.</p>
+      <div class="grid grid-cols-3 gap-3 max-w-sm mx-auto">
+        ${[['⌚','Relógio ou anel'],['🩺','Cinta Bluetooth'],['📱','Outro app']].map(([ic,lb])=>`
+          <div class="border border-gray-100 rounded-xl p-3 cursor-pointer hover:border-teal-200 transition-colors">
+            <div class="text-2xl mb-2">${ic}</div>
+            <div class="text-xs text-gray-600 font-medium">${lb}</div>
+          </div>`).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+function screenAcessos() {
+  return `
+  <div class="max-w-2xl">
+    <div class="mb-5"><h1 class="text-2xl font-bold text-gray-900">Acessos</h1>
+      <p class="text-sm text-gray-500 mt-0.5">Histórico de quem acessou seu histórico</p></div>
+    <div class="bg-white rounded-xl border border-gray-100 p-4">
+      <h3 class="font-semibold text-sm text-gray-900 mb-4">Acessos recentes</h3>
+      <div class="space-y-3">
+        ${[
+          {who:'Dr. Carlos Menezes',role:'Cardiologista',  date:'20/08/2024, 14:32',dur:'18 min',docs:3},
+          {who:'Dra. Paula Fonseca',role:'Ortopedista',    date:'12/07/2024, 09:15',dur:'12 min',docs:1},
+        ].map(a=>`
+          <div class="flex items-center justify-between p-3 rounded-lg" style="background:#f8fafc">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold" style="background:#ccfbf1;color:#0d9488">${a.who.split(' ').filter((_,i)=>i<2).map(n=>n[0]).join('')}</div>
+              <div>
+                <div class="text-sm font-medium text-gray-800">${a.who}</div>
+                <div class="text-xs text-gray-500">${a.role} · ${a.date}</div>
+              </div>
+            </div>
+            <div class="text-right">
+              <div class="text-xs text-gray-500">${a.dur}</div>
+              <div class="text-xs font-medium" style="color:#0d9488">${a.docs} docs</div>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+function screenConta() {
+  return `
+  <div class="max-w-2xl">
+    <div class="mb-5"><h1 class="text-2xl font-bold text-gray-900">Conta e privacidade</h1>
+      <p class="text-sm text-gray-500 mt-0.5">Configurações de segurança e privacidade</p></div>
+    <div class="space-y-2">
+      ${[
+        {ic:'🔒',title:'Senha',           desc:'Alterar senha de acesso',              act:'Alterar',  danger:false},
+        {ic:'📧',title:'E-mail',          desc:'maria@email.com',                      act:'Alterar',  danger:false},
+        {ic:'🔔',title:'Notificações',    desc:'Preferências de notificação',          act:'Configurar',danger:false},
+        {ic:'🛡️',title:'Privacidade',    desc:'Como seus dados são usados',           act:'Ver',      danger:false},
+        {ic:'📋',title:'Exportar dados',  desc:'Baixar uma cópia dos seus dados',      act:'Exportar', danger:false},
+        {ic:'⚠️',title:'Excluir conta',  desc:'Remover permanentemente sua conta',    act:'Excluir',  danger:true},
+      ].map(item=>`
+        <div class="bg-white rounded-xl border border-gray-100 p-4 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="text-xl">${item.ic}</span>
+            <div><div class="text-sm font-semibold text-gray-900">${item.title}</div><div class="text-xs text-gray-500">${item.desc}</div></div>
+          </div>
+          <button class="text-sm font-medium ${item.danger?'text-red-500':''}${!item.danger?'':''}" style="${!item.danger?'color:#0d9488':''}">${item.act}</button>
+        </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+function screenAssinatura() {
+  return `
+  <div class="max-w-2xl">
+    <div class="mb-5"><h1 class="text-2xl font-bold text-gray-900">Assinatura e pagamento</h1>
+      <p class="text-sm text-gray-500 mt-0.5">Gerencie seu plano e forma de pagamento</p></div>
+    <div class="bg-white rounded-xl border border-gray-100 p-6 text-center">
+      <div class="text-4xl mb-3">💳</div>
+      <div class="inline-block px-4 py-1.5 rounded-full text-sm font-semibold mb-3" style="background:#f0fdfa;color:#0d9488">Plano Demo — Gratuito</div>
+      <h3 class="font-semibold text-gray-900 mb-2">Acesso completo durante o hackathon</h3>
+      <p class="text-sm text-gray-500 mb-5">Na versão final, o AnaMedis será oferecido com planos gratuito e premium, com integração a planos de saúde.</p>
+      <div class="grid grid-cols-3 gap-3 text-sm mb-5">
+        ${[['✅','Documentos ilimitados'],['✅','Código para médico'],['✅','Análise IA']].map(([ic,lb])=>`
+          <div class="rounded-xl p-3 border border-gray-100"><span>${ic}</span><div class="text-xs text-gray-600 mt-1">${lb}</div></div>`).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+// ---- CODE ----
+function gerarCodigo() {
+  const ch = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const p1 = Array.from({length:4},()=>ch[Math.floor(Math.random()*ch.length)]).join('');
+  const p2 = Array.from({length:2},()=>ch[Math.floor(Math.random()*ch.length)]).join('');
+  generatedCode = `SAUDE-${p1}-${p2}`;
+  codeTimeLeft = 1800;
+  refreshCodeDisplay();
+  if (codeTimerID) clearInterval(codeTimerID);
+  codeTimerID = setInterval(tickTimer, 1000);
+}
+
+function refreshCodeDisplay() {
+  const cv = document.getElementById('code-val');
+  const cd = document.getElementById('code-display');
+  const gb = document.getElementById('gen-btn');
+  if (cv) cv.textContent = generatedCode;
+  if (cd) cd.classList.remove('hidden');
+  if (gb) gb.classList.add('hidden');
+}
+
+function tickTimer() {
+  if (codeTimeLeft <= 0) {
+    clearInterval(codeTimerID);
+    generatedCode = '';
+    const cd = document.getElementById('code-display');
+    const gb = document.getElementById('gen-btn');
+    if (cd) cd.classList.add('hidden');
+    if (gb) gb.classList.remove('hidden');
+    return;
+  }
+  codeTimeLeft--;
+  const m = String(Math.floor(codeTimeLeft/60)).padStart(2,'0');
+  const s = String(codeTimeLeft%60).padStart(2,'0');
+  const t = document.getElementById('timer');
+  if (t) t.textContent = `${m}:${s}`;
+}
+
+function copyCode() {
+  navigator.clipboard?.writeText(generatedCode);
+  const btn = event.currentTarget;
+  const orig = btn.innerHTML;
+  btn.innerHTML = '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Copiado!';
+  setTimeout(()=>{ btn.innerHTML = orig; }, 2000);
+}
+
+// ---- DOCTOR MODAL ----
+function openDoctorModal() {
+  const m = document.getElementById('doctor-modal');
+  const inp = document.getElementById('dm-input');
+  const ld = document.getElementById('dm-loading');
+  const err = document.getElementById('dm-error');
+  const code = document.getElementById('dm-code');
+  m.classList.remove('hidden');
+  inp.classList.remove('hidden');
+  ld.classList.add('hidden');
+  err.classList.add('hidden');
+  if (code) { code.value = ''; setTimeout(()=>code.focus(), 80); }
+}
+
+function closeDoctorModal() {
+  document.getElementById('doctor-modal').classList.add('hidden');
+}
+
+function verifyCode() {
+  const code = (document.getElementById('dm-code')?.value||'').trim().toUpperCase();
+  document.getElementById('dm-input').classList.add('hidden');
+  document.getElementById('dm-loading').classList.remove('hidden');
+  setTimeout(() => {
+    closeDoctorModal();
+    if (code.startsWith('SAUDE-') || code === generatedCode) {
+      showDoctorView();
+    } else {
+      document.getElementById('dm-loading').classList.add('hidden');
+      document.getElementById('dm-input').classList.remove('hidden');
+      document.getElementById('dm-error').classList.remove('hidden');
+      openDoctorModal();
     }
-  }, 600);
+  }, 1400);
 }
 
-function confirmDoc() {
-  docs.unshift({ type: 'Novo Hemograma', lab: 'Enviado agora', date: new Date().toLocaleDateString('pt-BR'), category: 'exame', alert: true, detail: 'Hb 11.2 g/dL â ' });
-  renderDocs();
-  goTo('screen-patient');
-  document.getElementById('upload-step-1').classList.remove('hidden');
-  document.getElementById('ai-processing').classList.add('hidden');
-  document.getElementById('ai-result').classList.add('hidden');
-}
+// ---- DOCTOR VIEW ----
+let doctorTimerID = null;
+let doctorTimeLeft = 1800;
 
-// =================== SHARE / CODE ===================
-let countdownTimer;
-function generateCode() {
-  const letters = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
-  const nums = '23456789';
-  const code = 'SAUDE-' + letters[Math.floor(Math.random()*letters.length)] + nums[Math.floor(Math.random()*nums.length)] + letters[Math.floor(Math.random()*letters.length)] + letters[Math.floor(Math.random()*letters.length)] + '-' + nums[Math.floor(Math.random()*nums.length)] + nums[Math.floor(Math.random()*nums.length)];
-  document.getElementById('access-code').textContent = code;
-  document.getElementById('code-display').classList.remove('hidden');
-  document.getElementById('code-display').classList.add('fade-in');
-  if(countdownTimer) clearInterval(countdownTimer);
-  let seconds = 1800;
-  const countEl = document.getElementById('countdown');
-  countdownTimer = setInterval(() => {
-    seconds--;
-    if(seconds <= 0) { clearInterval(countdownTimer); countEl.textContent = 'Expirado'; return; }
-    countEl.textContent = Math.floor(seconds/60) + ':' + String(seconds%60).padStart(2,'0');
+function showDoctorView() {
+  doctorTimeLeft = 1800;
+  const dv = document.getElementById('doctor-view');
+  const dvc = document.getElementById('doctor-view-content');
+  dv.classList.remove('hidden');
+  dvc.innerHTML = buildDoctorView();
+  if (doctorTimerID) clearInterval(doctorTimerID);
+  doctorTimerID = setInterval(() => {
+    doctorTimeLeft--;
+    const m = String(Math.floor(doctorTimeLeft/60)).padStart(2,'0');
+    const s = String(doctorTimeLeft%60).padStart(2,'0');
+    const t = document.getElementById('dv-timer');
+    if (t) t.textContent = `${m}:${s}`;
+    if (doctorTimeLeft<=0) {
+      clearInterval(doctorTimerID);
+      closeDoctorView();
+    }
   }, 1000);
 }
 
-// =================== DOCTOR ACCESS ===================
-function accessPatient() {
-  const code = document.getElementById('doctor-code').value.trim().toUpperCase();
-  if(!code) { alert('Por favor, insira o cÃ³digo do paciente.'); return; }
-  if(code !== 'SAUDE-7K4P-92' && code.length < 10) { alert('CÃ³digo invÃ¡lido ou expirado.'); return; }
-  goTo('screen-doctor-view');
+function closeDoctorView() {
+  clearInterval(doctorTimerID);
+  document.getElementById('doctor-view').classList.add('hidden');
 }
 
-// =================== INIT ===================
-renderDocs();
-goTo('screen-home');
+function buildDoctorView() {
+  return `
+  <div class="min-h-screen" style="background:#f8fafc">
+    <div class="bg-white border-b sticky top-0 z-10 px-6 py-3 flex items-center justify-between shadow-sm">
+      <div class="flex items-center gap-3">
+        <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background:#0d9488">
+          <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+        </div>
+        <span class="font-bold text-gray-900">anamedis</span>
+        <span class="text-xs px-2 py-0.5 rounded-full font-medium" style="background:#f0fdfa;color:#0d9488">Portal do Médico</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="text-right hidden sm:block">
+          <div class="text-xs text-gray-400">Acesso temporário</div>
+          <div class="text-xs font-mono text-gray-700">SAUDE-7K4P-92 · <span id="dv-timer" class="font-semibold" style="color:#ef4444">29:58</span></div>
+        </div>
+        <button onclick="closeDoctorView()" class="text-sm font-medium border rounded-lg px-3 py-1.5 transition-colors" style="color:#ef4444;border-color:#fecaca">
+          Encerrar acesso
+        </button>
+      </div>
+    </div>
+
+    <div class="max-w-4xl mx-auto px-6 py-6">
+      <div class="bg-white rounded-2xl border border-gray-100 p-5 mb-5">
+        <div class="flex items-center gap-4">
+          <div class="w-14 h-14 rounded-full flex items-center justify-center text-xl font-bold" style="background:#ccfbf1;color:#0d9488">MA</div>
+          <div class="flex-1">
+            <h2 class="text-xl font-bold text-gray-900">Maria Aparecida</h2>
+            <div class="flex flex-wrap gap-4 text-sm text-gray-500 mt-1">
+              <span>🎂 42 anos · F</span>
+              <span>🩸 Tipo O+</span>
+              <span>⚖️ 62 kg · 1,62 m</span>
+              <span>📍 São Paulo, SP</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rounded-xl p-4 mb-5 flex items-start gap-3 border" style="background:#fef2f2;border-color:#fecaca">
+        <span class="text-xl flex-shrink-0">⚠️</span>
+        <div>
+          <h4 class="text-sm font-semibold" style="color:#991b1b">Alertas importantes</h4>
+          <div class="text-sm space-y-0.5 mt-1" style="color:#b91c1c">
+            <p>🚫 <strong>Alergia:</strong> Penicilina</p>
+            <p>⚠️ <strong>Sensibilidade:</strong> Látex (leve)</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-5">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="font-semibold text-gray-900">Documentos do paciente</h3>
+          <span class="text-sm text-gray-500">${docs.length} documentos</span>
+        </div>
+        <div class="space-y-2">
+          ${docs.map(d=>`
+            <div class="bg-white rounded-xl border border-gray-100 p-4 flex items-center gap-3 hover:border-teal-200 cursor-pointer transition-all">
+              <div class="w-9 h-9 rounded-lg flex items-center justify-center text-lg flex-shrink-0" style="background:#f0fdfa">${d.icon}</div>
+              <div class="flex-1">
+                <div class="font-medium text-sm text-gray-900">${d.name}</div>
+                <div class="text-xs text-gray-500">${d.source} · ${d.date}</div>
+                <div class="text-xs text-gray-400 mt-0.5">${d.desc}</div>
+              </div>
+              <span class="text-xs px-2.5 py-1 rounded-full font-medium ${typeColor(d.type)}">${d.type}</span>
+            </div>`).join('')}
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl border border-gray-100 p-4 mb-5">
+        <h3 class="font-semibold text-sm text-gray-900 mb-3">Medicamentos em uso</h3>
+        ${[{n:'Losartana 50mg',d:'1x ao dia',i:'desde 20/08/2024'},{n:'Ômega-3 1g',d:'1x ao dia',i:'desde 05/06/2024'}].map(m=>`
+          <div class="flex items-center justify-between py-2.5 border-b border-gray-50 last:border-0">
+            <div><div class="text-sm font-medium text-gray-800">💊 ${m.n}</div><div class="text-xs text-gray-500">${m.d} · ${m.i}</div></div>
+            <span class="text-xs px-2 py-0.5 rounded-full" style="background:#fff7ed;color:#ea580c">Em uso</span>
+          </div>`).join('')}
+      </div>
+
+      <div class="rounded-xl p-4 border mb-5" style="background:#f0fdfa;border-color:#99f6e4" id="ai-box">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <span class="text-lg">🤖</span>
+            <div>
+              <h3 class="font-semibold text-sm" style="color:#134e4a">Análise IA — AnaMedis</h3>
+              <p class="text-xs" style="color:#0d9488">Resumo clínico gerado automaticamente</p>
+            </div>
+          </div>
+          <button onclick="runAI()" id="ai-btn" class="text-xs text-white px-3 py-1.5 rounded-lg font-medium" style="background:#0d9488">Gerar análise</button>
+        </div>
+        <div id="ai-out" class="hidden text-sm" style="color:#134e4a"></div>
+      </div>
+
+      <div class="p-4 rounded-xl border text-center" style="background:#f8fafc;border-color:#e2e8f0">
+        <p class="text-xs text-gray-400">Este acesso foi autorizado pelo paciente e é temporário. Nenhum dado é salvo neste dispositivo. LGPD compliant.</p>
+      </div>
+    </div>
+  </div>`;
+}
+
+function runAI() {
+  const btn = document.getElementById('ai-btn');
+  const out = document.getElementById('ai-out');
+  if (!btn || !out) return;
+  btn.textContent = 'Analisando...';
+  btn.disabled = true;
+  out.classList.remove('hidden');
+  const steps = [
+    '📊 Analisando 6 documentos clínicos...',
+    '💊 Verificando interações medicamentosas...',
+    '📈 Correlacionando resultados laboratoriais...',
+    '🔍 Identificando padrões relevantes...',
+  ];
+  let i = 0;
+  out.innerHTML = `<div class="flex items-center gap-2" style="color:#0d9488"><div class="w-4 h-4 border-2 rounded-full spin" style="border-color:#99f6e4;border-top-color:#0d9488"></div>${steps[0]}</div>`;
+  const t = setInterval(() => {
+    i++;
+    if (i >= steps.length) {
+      clearInterval(t);
+      btn.textContent = 'Reanalisar';
+      btn.disabled = false;
+      out.innerHTML = `
+        <div class="bg-white rounded-xl p-4 space-y-3 border" style="border-color:#99f6e4">
+          <div>
+            <span class="font-semibold" style="color:#134e4a">📋 Resumo clínico:</span>
+            <p class="mt-1" style="color:#0f766e">Paciente feminina, 42 anos, histórico cardiovascular estável com HAS controlada em uso de Losartana 50mg. Ecocardiograma (09/2024) com FE de 65%, dentro da normalidade.</p>
+          </div>
+          <div>
+            <span class="font-semibold" style="color:#134e4a">⚠️ Pontos de atenção:</span>
+            <ul class="mt-1 space-y-0.5 list-disc list-inside" style="color:#0f766e">
+              <li>Alergia documentada a Penicilina — evitar β-lactâmicos</li>
+              <li>Sensibilidade a látex — usar equipamentos latex-free</li>
+              <li>Coluna sem alterações (RM 07/2024)</li>
+            </ul>
+          </div>
+          <div>
+            <span class="font-semibold" style="color:#134e4a">✅ Exames em dia:</span>
+            <p class="mt-1" style="color:#0f766e">Hemograma (10/2024), Ecocardiograma (09/2024), Coluna (07/2024). Próximo check-up cardiovascular recomendado: 02/2025.</p>
+          </div>
+          <p class="text-xs pt-2 border-t" style="color:#0d9488;border-color:#99f6e4">⚠️ Esta análise é gerada por IA para apoio clínico e não substitui julgamento médico.</p>
+        </div>`;
+    } else {
+      out.innerHTML = `<div class="flex items-center gap-2" style="color:#0d9488"><div class="w-4 h-4 border-2 rounded-full spin" style="border-color:#99f6e4;border-top-color:#0d9488"></div>${steps[i]}</div>`;
+    }
+  }, 700);
+}
+
+// ---- INIT ----
+document.addEventListener('DOMContentLoaded', () => nav('inicio'));
 </script>
 </body>
 </html>
