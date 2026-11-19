@@ -4,6 +4,11 @@
 
 [![Live Demo](https://img.shields.io/badge/demo-anamedis.replit.app-0d9488?style=for-the-badge)](https://anamedis.replit.app)
 [![Hackathon](https://img.shields.io/badge/Replit_%C3%97_startups.com.br-Hackathon_2026-7c3aed?style=for-the-badge)](https://hackathon-startups.replit.app)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
+
+---
+
+![AnaMedis — painel principal com sidebar escura e carteira de saúde](docs/screenshot.png)
 
 ---
 
